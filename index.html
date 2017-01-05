@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="blogApp">
+<head>
+    <meta charset="UTF-8">
+    <title>MyBlog</title>
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body >
+<div ng-controller="BlogController as blog">
+    <div class="topbar">
+        <div class="container">
+            <div class="row">
+                <div class="col-s-4">
+                    <h1 ng-click="blog.selectTab('blog')" class="push-left">{{blog.title}}</h1>
+                </div>
+                <div class="offset-s-4 col-s-4">
+                    <nav role='navigation' class="push-right">
+                        <ul>
+                            <li><a href="#" ng-click="blog.selectTab('blog')">See All Posts</a></li>
+                            <li><a href="#" ng-click="blog.selectTab('new')">Add New Post</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <div class="content">
+        <div class="container">
+            <div class="row">
+
+                <ul class="post-grid" ng-show="blog.isSelected('blog')">
+                    <li ng-repeat="post in blog.posts" class="col-s-4" ng-class="{ 'reset-s' : $index%3==0 }" ng-click="blog.selectTab($index)" >
+                        <h3>{{post.title}}</h3>
+
+                        <div ng-style="blog.style(post)" >{{post.body[0] | limitTo:70}}...</div>
+                        <p class="fa fa-comment push-left"> {{post.comments.length}}
+                        </p>
+                        <p class="fa fa-heart push-right"> {{post.likes}}
+                        </p>
+                    </li>
+                </ul>
+                <div class="post" ng-repeat="post in blog.posts" ng-show="blog.isSelected($index)">
+                    <div>
+
+                        <h2>{{post.title}}</h2>
+                        <img src="{{post.image}}" ng-show="{{post.image}}"/>
+                        <cite>by {{post.author}} on {{post.createdOn | date}}</cite>
+                        <div class="post-body" ng-style="blog.style(post)" >
+                            <p ng-repeat="paragraph in post.body">{{paragraph}}</p>
+                        </div>
+
+                        <div class="comments" ng-controller="CommentController as commentCtrl">
+                            <button class="fa fa-heart" ng-click="post.likes = post.likes+1"> {{post.likes}}</button>
+                            <h3>Comments</h3>
+                            <ul>
+                                <li ng-repeat="comment in post.comments">
+                                    "{{comment.body}}"
+                                    <cite>- <b>{{comment.author}}</b></cite>
+                                </li>
+                            </ul>
+                            <form name="commentForm" ng-submit="commentForm.$valid && commentCtrl.addComment(post)" novalidate>
+
+
+                                <h4>Add Comment</h4>
+                                <textarea ng-model="commentCtrl.comment.body" cols="30" rows="10" required></textarea>
+                                <label >by:</label>
+                                <input type="text" ng-model="commentCtrl.comment.author" required placeholder="Name"/>
+
+                                <input type="submit" value="Submit" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="post" ng-show="blog.isSelected('new')">
+                    <h2>Add New Post</h2>
+
+                    <form name="postForm"  novalidate>
+                        <h4>Title</h4>
+                        <input type="text" ng-model="blog.post.title"/>
+                        <h4>Body</h4>
+                        <input type = "checkbox" id="bold" ng-model = "blog.post.bold" ng-value=checked ng-init = "blog.post.bold = false" /> <label for="bold"><b>B</b></label>
+                        <input type = "checkbox" id="underlined" ng-model = "blog.post.underlined" ng-value=checked ng-init = "blog.post.underlined = false" /> <label for="underlined"><U>U</U></label>
+                        <input type = "checkbox" id="italic" ng-model = "blog.post.italic" ng-value=checked ng-init = "blog.post.italic = false" /> <label for="italic"><i>I</i></label>
+                        <textarea ng-model="blog.post.body" ng-list="/\n/" rows="10" ng-style="blog.style(blog.post)"></textarea>
+                        <label >Featured Image URL</label>
+                        <input type="text" ng-model="blog.post.image" placeholder="image URL" />
+                        <label >by:</label>
+                        <input type="text" ng-model="blog.post.author" placeholder="Author Name" required/>
+                        <input type="submit" value="Submit" ng-click=" blog.addPost()"/>
+                        </form>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>
+
